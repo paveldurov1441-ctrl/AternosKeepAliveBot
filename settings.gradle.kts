@@ -10,6 +10,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven("https://repo.opencollab.dev/main/")
     }
 }
 rootProject.name = "AternosKeepAliveBot"

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.AternosKeepAlive" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#1B6EF3</item>
+        <item name="colorPrimaryContainer">#D6E3FF</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#00C853</item>
+        <item name="android:statusBarColor">#0F172A</item>
+        <item name="android:navigationBarColor">#F8FAFC</item>
+        <item name="android:windowBackground">#F1F5F9</item>
+    </style>
+</resources>
