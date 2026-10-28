@@ -5,9 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import android.os.IBinder
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -63,7 +65,6 @@ class MainActivity : AppCompatActivity(), BotService.StatusListener {
             setPadding(dp(20), dp(24), dp(20), dp(32))
         }
 
-        // Header
         val header = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER_HORIZONTAL
@@ -74,7 +75,7 @@ class MainActivity : AppCompatActivity(), BotService.StatusListener {
             text = "Aternos KeepAlive"
             textSize = 26f
             setTextColor(Color.parseColor("#0F172A"))
-            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            typeface = Typeface.DEFAULT_BOLD
         }
         header.addView(title)
 
@@ -87,7 +88,6 @@ class MainActivity : AppCompatActivity(), BotService.StatusListener {
         header.addView(subtitle)
         content.addView(header)
 
-        // Status card
         val statusCard = card()
         val statusRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -95,8 +95,8 @@ class MainActivity : AppCompatActivity(), BotService.StatusListener {
             setPadding(dp(16), dp(14), dp(16), dp(14))
         }
 
-        statusDot = android.view.View(this).apply {
-            background = ContextCompat.getDrawable(this@MainActivity, R.drawable.bg_status)
+        statusDot = View(this).apply {
+            setBackgroundColor(Color.parseColor("#94A3B8"))
             layoutParams = LinearLayout.LayoutParams(dp(12), dp(12)).apply {
                 marginEnd = dp(12)
             }
@@ -107,13 +107,12 @@ class MainActivity : AppCompatActivity(), BotService.StatusListener {
             text = "Отключено"
             textSize = 15f
             setTextColor(Color.parseColor("#0F172A"))
-            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            typeface = Typeface.DEFAULT_BOLD
         }
         statusRow.addView(statusText)
         statusCard.addView(statusRow)
         content.addView(statusCard, matchWrap(bottom = 16))
 
-        // Settings card
         val settingsCard = card()
         val settings = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -121,7 +120,8 @@ class MainActivity : AppCompatActivity(), BotService.StatusListener {
         }
 
         settings.addView(label("Адрес сервера"))
-        hostInput = field("CreateFer.aternos.me")
+        hostInput = field("")
+        hostInput.hint = "CreateFer.aternos.me"
         settings.addView(hostInput, matchWrap(bottom = 12))
 
         settings.addView(label("Порт"))
@@ -134,32 +134,38 @@ class MainActivity : AppCompatActivity(), BotService.StatusListener {
 
         settings.addView(label("Версия Minecraft"))
         versionSpinner = Spinner(this).apply {
-            adapter = ArrayAdapter(this@MainActivity, android.R.layout.simple_spinner_dropdown_item, versions)
+            adapter = ArrayAdapter(
+                this@MainActivity,
+                android.R.layout.simple_spinner_dropdown_item,
+                versions
+            )
         }
         settings.addView(versionSpinner, matchWrap(bottom = 12))
 
         settings.addView(label("Загрузчик"))
         loaderSpinner = Spinner(this).apply {
-            adapter = ArrayAdapter(this@MainActivity, android.R.layout.simple_spinner_dropdown_item, loaders)
+            adapter = ArrayAdapter(
+                this@MainActivity,
+                android.R.layout.simple_spinner_dropdown_item,
+                loaders
+            )
         }
         settings.addView(loaderSpinner, matchWrap(bottom = 8))
 
         settingsCard.addView(settings)
         content.addView(settingsCard, matchWrap(bottom = 16))
 
-        // Buttons
         connectBtn = Button(this).apply {
             text = "ПОДКЛЮЧИТЬСЯ"
             setTextColor(Color.WHITE)
             textSize = 15f
-            typeface = android.graphics.Typeface.DEFAULT_BOLD
-            background = ContextCompat.getDrawable(this@MainActivity, R.drawable.bg_button_primary)
+            typeface = Typeface.DEFAULT_BOLD
+            setBackgroundColor(Color.parseColor("#1B6EF3"))
             setPadding(0, dp(14), 0, dp(14))
             setOnClickListener { toggleConnection() }
         }
         content.addView(connectBtn, matchWrap(bottom = 16))
 
-        // Log card
         val logCard = card()
         val logInner = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -179,7 +185,6 @@ class MainActivity : AppCompatActivity(), BotService.StatusListener {
         root.addView(content)
         setContentView(root)
 
-        // Restore last values
         val prefs = getSharedPreferences("bot", MODE_PRIVATE)
         hostInput.setText(prefs.getString("host", ""))
         portInput.setText(prefs.getString("port", "25565"))
@@ -224,7 +229,6 @@ class MainActivity : AppCompatActivity(), BotService.StatusListener {
             return
         }
 
-        // Save prefs
         getSharedPreferences("bot", MODE_PRIVATE).edit()
             .putString("host", host)
             .putString("port", port.toString())
@@ -242,12 +246,10 @@ class MainActivity : AppCompatActivity(), BotService.StatusListener {
         }
 
         if (botService?.isRunning == true) {
-            stopService(intent)
             botService?.stopBot()
             setDisconnectedUi()
         } else {
             ContextCompat.startForegroundService(this, intent)
-            bindService(intent, connection, Context.BIND_AUTO_CREATE)
             setConnectingUi()
         }
     }
@@ -259,12 +261,12 @@ class MainActivity : AppCompatActivity(), BotService.StatusListener {
                 connected -> {
                     statusDot.setBackgroundColor(Color.parseColor("#00C853"))
                     connectBtn.text = "ОТКЛЮЧИТЬСЯ"
-                    connectBtn.background = ContextCompat.getDrawable(this, R.drawable.bg_button_danger)
+                    connectBtn.setBackgroundColor(Color.parseColor("#EF4444"))
                 }
                 connecting -> {
                     statusDot.setBackgroundColor(Color.parseColor("#F59E0B"))
                     connectBtn.text = "ПОДКЛЮЧЕНИЕ..."
-                    connectBtn.background = ContextCompat.getDrawable(this, R.drawable.bg_button_primary)
+                    connectBtn.setBackgroundColor(Color.parseColor("#1B6EF3"))
                 }
                 else -> setDisconnectedUi()
             }
@@ -279,7 +281,7 @@ class MainActivity : AppCompatActivity(), BotService.StatusListener {
         statusText.text = "Отключено"
         statusDot.setBackgroundColor(Color.parseColor("#94A3B8"))
         connectBtn.text = "ПОДКЛЮЧИТЬСЯ"
-        connectBtn.background = ContextCompat.getDrawable(this, R.drawable.bg_button_primary)
+        connectBtn.setBackgroundColor(Color.parseColor("#1B6EF3"))
     }
 
     private fun setConnectingUi() {
@@ -302,10 +304,9 @@ class MainActivity : AppCompatActivity(), BotService.StatusListener {
         logView.text = "$time  $msg\n${logView.text}"
     }
 
-    // UI helpers
     private fun card() = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
-        background = ContextCompat.getDrawable(this@MainActivity, R.drawable.bg_card)
+        setBackgroundColor(Color.WHITE)
         elevation = dp(2).toFloat()
     }
 
@@ -316,11 +317,8 @@ class MainActivity : AppCompatActivity(), BotService.StatusListener {
         setPadding(0, 0, 0, dp(4))
     }
 
-    private fun field(hint: String) = EditText(this).apply {
-        this.hint = hint
-        setText(hint.takeIf { it.matches(Regex(".*\\d+.*")) || it.contains(".") } ?: "")
-        if (hint == "25565") setText("25565")
-        if (hint == "KeepAliveBot") setText("KeepAliveBot")
+    private fun field(default: String) = EditText(this).apply {
+        setText(default)
         isSingleLine = true
         setBackgroundColor(Color.parseColor("#F8FAFC"))
         setPadding(dp(12), dp(12), dp(12), dp(12))
