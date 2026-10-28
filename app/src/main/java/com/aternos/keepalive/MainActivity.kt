@@ -88,7 +88,7 @@ class MainActivity : Activity() {
         EditText(this).apply {
             hint = label
             setText(defaultValue)
-            singleLine = true
+            isSingleLine = true
         }
 
     private fun matchWrap() = LinearLayout.LayoutParams(
